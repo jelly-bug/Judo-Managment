@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        /* General Styles */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #2c2c2c;
+            color: #f5f5dc;
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: #3c3c3c;
+            color: #ffca28;
+            border-bottom: 2px solid #ffca28;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 3.5rem;
+            color: #ffca28;
+        }
+
+        .menu {
+            position: relative;
+        }
+
+        .menu-icon {
+            cursor: pointer;
+            font-size: 2rem;
+            color: #ffca28;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: #3c3c3c;
+            border: 1px solid #5a5a5a;
+            border-radius: 5px;
+            margin-top: 10px;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .dropdown a {
+            display: block;
+            text-decoration: none;
+            color: #f5f5dc;
+            padding: 5px;
+        }
+
+        .dropdown a:hover {
+            background: #ffca28;
+            color: #2c2c2c;
+        }
+
+        .menu:hover .dropdown {
+            display: block;
+        }
+
+        /* Section */
+        .section {
+            margin: 30px;
+            padding: 0;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            color: #ffca28;
+        }
+
+        /* Scrollable Cards */
+        .scroll-container {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 20px 0;
+            margin: 0 -30px; /* Negative margin to align with edges */
+            padding-left: 30px; /* Add padding back on left */
+            padding-right: 30px; /* Add padding back on right */
+            scrollbar-width: thin;
+            scrollbar-color: #ffca28 #2c2c2c;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            height: 8px;
+            background: #2c2c2c;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #ffca28;
+            border-radius: 4px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .card {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 0 0 auto;
+            width: 220px;
+            height: 180px;
+            background: #3c3c3c;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.5rem;
+            color: #f5f5dc;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #3c3c3c;
+            border-radius: 8px;
+            z-index: 1000;
+            width: 90%;
+            max-width: 600px;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 20px;
+            color: #ffca28;
+            background: #3c3c3c;
+            border-bottom: 1px solid #4a4a4a;
+            border-radius: 8px 8px 0 0;
+            font-size: 1.8rem;
+        }
+
+        .modal-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(80vh - 130px); /* Adjust for header and close button */
+            background: #3c3c3c;
+            color: #f5f5dc;
+            font-size: 1.2rem;
+            line-height: 2;
+        }
+
+        .modal-content strong {
+            color: #ffca28;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #2c2c2c;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #ffca28;
+            border-radius: 4px;
+        }
+
+        .modal::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal::-webkit-scrollbar-track {
+            background: #2c2c2c;
+            border-radius: 4px;
+        }
+
+        .modal::-webkit-scrollbar-thumb {
+            background: #ffca28;
+            border-radius: 4px;
+        }
+
+        .modal::-webkit-scrollbar-thumb:hover {
+            background: #d4a019;
+        }
+
+        .profile-info {
+            margin-bottom: 20px;
+        }
+
+        .profile-info h3 {
+            color: #f5f5dc;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .profile-info p {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .profile-info strong {
+            color: #ffca28;
+            margin-right: 8px;
+        }
+
+        /* Training Plans Section */
+        .training-plans {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #4a4a4a;
+        }
+
+        .training-plans h3 {
+            color: #f5f5dc;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .plan-details {
+            background: #2c2c2c;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .plan-details h4 {
+            color: #ffca28;
+            margin-bottom: 10px;
+        }
+
+        .plan-details p {
+            margin: 5px 0;
+        }
+
+
+        /* Athlete Section */
+        .athlete-section {
+            max-height: none;
+            overflow-y: visible;
+        }
+
+        .athlete-section h3 {
+            color: #f5f5dc;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .athlete-section p {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .athlete-section strong {
+            color: #ffca28;
+            margin-right: 8px;
+        }
+
+        .athlete-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .athlete-section::-webkit-scrollbar-track {
+            background: #2c2c2c;
+            border-radius: 4px;
+        }
+
+        .athlete-section::-webkit-scrollbar-thumb {
+            background: #ffca28;
+            border-radius: 4px;
+        }
+
+        .athlete-section::-webkit-scrollbar-thumb:hover {
+            background: #d4a019;
+        }
+
+        .athlete-subscriptions,
+        .athlete-competitions {
+             margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #4a4a4a;
+        }
+
+        .competition-details button.modal-close {
+            margin: 10px auto;
+        }
+
+        .competition-details {
+            padding: 20px;
+        }
+
+        .competition-details h3 {
+            color: #ffca28;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .competition-details p {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .competition-details .modal-button {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            background: #ffca28;
+            color: #2c2c2c;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .competition-details .modal-button:hover {
+            background: #d4a019;
+            transform: scale(1.02);
+        }
+
+        /* Buttons */
+        .modal-button {
+            display: block;
+            background: #ffca28;
+            border: none;
+            color: #2c2c2c;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px auto;
+            width: 150px;
+            text-align: center;
+        }
+
+        .modal-close {
+            display: block;
+            background: #ffca28;
+            border: none;
+            color: #2c2c2c;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px auto;
+            width: 150px;
+            text-align: center;
+        }
+
+
+        .modal-button:hover {
+            background: #d4a019;
+            transform: scale(1.02);
+        }
+        .modal-close:hover {
+            background: #ffd54f;
+        }
+
+        .cancel-button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .cancel-button:hover {
+            background: #ff0000;
+        }
+
+        /* Confirmation Dialog */
+
+        .confirm-dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #3c3c3c;
+            padding: 25px;
+            border-radius: 8px;
+            z-index: 1002;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-dialog h3 {
+            color: #ffca28;
+            margin: 0 0 15px 0;
+        }
+
+        .dialog-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .dialog-buttons button,
+        .dialog-buttons form {
+            flex: 1;
+        }
+
+        .dialog-buttons button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .dialog-buttons .cancel-btn {
+            background: #4a4a4a;
+            color: white;
+        }
+
+        .dialog-buttons .confirm-btn {
+            background: #ff4444;
+            color: white;
+        }
+
+        .dialog-buttons button:hover {
+            transform: scale(1.02);
+        }
+
+        /* Subscription Cards */
+        .subscription-card {
+            background: #2c2c2c;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .subscription-card h3,
+        .subscription-card h4 {
+            color: #ffca28;
+            margin-bottom: 10px;
+        }
+
+        .subscription-card p {
+            margin: 8px 0;
+        }
+
+        /* Payment History */
+        .payment-history {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .payment-history th,
+        .payment-history td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #4a4a4a;
+        }
+
+        .payment-history th {
+            background-color: #3c3c3c;
+            color: #ffca28;
+            font-weight: bold;
+        }
+
+        .payment-history tr:hover {
+            background-color: #3c3c3c;
+        }
+
+        /* Modal Tabs */
+        .modal-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4a4a4a;
+            padding-bottom: 10px;
+            position: sticky;
+            top: 0;
+            background: #3c3c3c;
+            z-index: 1;
+        }
+
+        .modal-tab {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            color: #f5f5dc;
+            font-size: 1.1rem;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .modal-tab:hover {
+            background: #4a4a4a;
+        }
+
+        .modal-tab.active {
+            color: #ffca28;
+            background: #3c3c3c;
+            border-bottom: 2px solid #ffca28;
+        }
+
+        .modal-content-section {
+            display: none;
+        }
+
+        .modal-content-section.active {
+            display: block;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #2c2c2c;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #ffca28;
+            border-radius: 4px;
+        }
+
+        /* Status Labels */
+        .status-active {
+            color: #4CAF50;
+        }
+
+        .status-completed {
+            color: #9E9E9E;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const menuIcon = document.querySelector('.menu-icon');
+            const dropdown = document.querySelector('.dropdown');
+
+            menuIcon.addEventListener('click', () => {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!menuIcon.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+
+            // Athletes section
+            const athleteCards = document.querySelectorAll('#athletes .card');
+            athleteCards.forEach(card => {
+                card.onclick = function() {
+                    const content = `
+                        <strong>Age:</strong> ${this.getAttribute('data-age')}<br>
+                        <strong>Weight:</strong> ${this.getAttribute('data-weight')} kg<br>
+                        <strong>Weight Category:</strong> ${this.getAttribute('data-category')}<br>
+                    `;
+                    showDetails(`Athlete: ${this.getAttribute('data-name')}`, content);
+                };
+            });
+
+            // Plans section
+            const planCards = document.querySelectorAll('#plans .card');
+            planCards.forEach(card => {
+                card.onclick = function() {
+                    const content = `
+                        <strong>Description:</strong> ${this.getAttribute('data-description')}<br>
+                        <strong>Monthly Fee:</strong> ₱${this.getAttribute('data-monthly-fee')}<br>
+                        <strong>Weekly Fee:</strong> ₱${this.getAttribute('data-weekly-fee')}<br>
+                        <strong>Private Hourly Fee:</strong> ₱${this.getAttribute('data-hourly-fee')}<br>
+                        <strong>Category:</strong> ${this.getAttribute('data-category')}<br>
+                        <strong>Sessions Per Week:</strong> ${this.getAttribute('data-sessions')}<br>
+                        <button
+                            class='modal-button'
+                            data-athlete-id='${this.getAttribute('data-athlete-id')}'
+                            data-plan-id='${this.getAttribute('data-plan-id')}'
+                            onclick='registerForPlan(this); event.stopPropagation();'>
+                            Register for Training plan
+                        </button>
+                    `;
+                    showDetails(this.getAttribute('data-name'), content);
+                };
+            });
+
+
+            // Competitions section
+            const competitionCards = document.querySelectorAll('#competitions .card');
+            competitionCards.forEach(card => {
+                card.onclick = function() {
+                    const registerUrl = this.getAttribute('data-register-url');
+                    const content = `
+                        <div class="competition-details">
+                            <h3>${this.getAttribute('data-name')}</h3>
+                            <p><strong>Location:</strong> ${this.getAttribute('data-location')}</p>
+                            <p><strong>Date:</strong> ${this.getAttribute('data-date')}</p>
+                            <p><strong>Competition Fee:</strong> ₱${this.getAttribute('data-entry-fee')}</p>
+                            <p><strong>Category:</strong> ${this.getAttribute('data-category')}</p>
+                            <button onclick="window.location.href='${registerUrl}'" class='modal-button'>
+                                Register for Competition
+                            </button>
+                        </div>`;
+                    showDetails('Competition Details', content);
+                };
+            });
+        });
+
+        function registerForPlan(button) {
+            // Close any open modals first
+
+            const athleteId = button.getAttribute('data-athlete-id');
+            const trainingPlanId = button.getAttribute('data-plan-id');
+
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = `/payment_session_type/${athleteId}/${trainingPlanId}`;
+
+            const sessionTypeField = document.createElement("input");
+            sessionTypeField.type = "hidden";
+            sessionTypeField.name = "session_type";
+            sessionTypeField.value = "default_session";
+
+            form.appendChild(sessionTypeField);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function showCompetitionDetails(card) {
+            const registerUrl = card.dataset.registerUrl;
+            const details = `
+                <div class="competition-details">
+                    <h3>${card.dataset.competitionName}</h3>
+                    <p><strong>Location:</strong> ${card.dataset.location}</p>
+                    <p><strong>Date:</strong> ${card.dataset.date}</p>
+                    <p><strong>Competition Fee:</strong> ₱${card.dataset.entryFee}</p>
+                    <p><strong>Category:</strong> ${card.dataset.category}</p>
+                    <button onclick="registerForCompetition('${registerUrl}')" class="modal-close">
+                        Register for Competition
+                    </button>
+                </div>`;
+
+            showDetails(card.dataset.competitionName, details);
+        }
+
+        function registerForCompetition(url) {
+            closeModal();  // Close modal before redirecting
+            window.location.href = url;
+        }
+
+
+        // Add error handling to showDetails
+        function showDetails(title, content) {
+            try {
+                const modalTitle = document.getElementById('modal-title');
+                const modalContent = document.getElementById('modal-content');
+                const modalOverlay = document.getElementById('modal-overlay');
+                const modal = document.getElementById('modal');
+
+                if (!modalTitle || !modalContent || !modalOverlay || !modal) {
+                    console.error('Modal elements not found');
+                    return;
+                }
+
+                modalTitle.textContent = title;
+                modalContent.innerHTML = content; // Set content directly
+                modalOverlay.style.display = 'block';
+                modal.style.display = 'block';
+            } catch (error) {
+                console.error('Error showing modal:', error);
+                closeModal();
+            }
+        }
+
+
+        function scrollModal(direction) {
+            const modal = document.getElementById('modal');
+            const scrollAmount = 300; // Adjust scroll amount as needed
+
+            if (direction === 'up') {
+                modal.scrollBy({
+                    top: -scrollAmount,
+                    behavior: 'smooth'
+                });
+            } else {
+                modal.scrollBy({
+                    top: scrollAmount,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function checkScrollButtons(modal) {
+            const scrollButtons = modal.querySelector('.scroll-buttons');
+            if (!scrollButtons) return;
+
+            const hasScroll = modal.scrollHeight > modal.clientHeight;
+            scrollButtons.classList.toggle('hidden', !hasScroll);
+
+            // Position the buttons based on modal position
+            const modalRect = modal.getBoundingClientRect();
+            scrollButtons.style.top = `${modalRect.top + 20}px`;
+            scrollButtons.style.height = `${modalRect.height - 40}px`; // Account for padding
+        }
+
+
+        function closeModal() {
+            const modalElements = [
+                'modal-overlay',
+                'modal',
+                'confirm-dialog'
+            ];
+
+            modalElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+
+            // Also close any dynamically created overlays
+            const extraOverlays = document.querySelectorAll('.modal-overlay');
+            extraOverlays.forEach(overlay => {
+                overlay.style.display = 'none';
+            });
+        }
+
+        function cancelTraining(trainingId) {
+            // Create form and submit directly
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/cancel_training/${trainingId}`;
+
+            // Add CSRF token if needed
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrf_token';
+                csrfInput.value = csrfToken.content;
+                form.appendChild(csrfInput);
+            }
+
+            // Append form to body and submit
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function closeDialog() {
+            const dialog = document.querySelector('.confirm-dialog');
+            const overlay = document.querySelector('.modal-overlay');
+            if (dialog) dialog.remove();
+            if (overlay) overlay.remove();
+        }
+
+        function confirmCancelTraining(trainingId, dialog) {
+            fetch(`/cancel_training/${trainingId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'  // Add this header
+                },
+                credentials: 'same-origin'  // Add this to ensure cookies are sent
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Remove the plan card from the display
+                    const planCard = document.querySelector(`[data-training-id="${trainingId}"]`);
+                    if (planCard) {
+                        planCard.remove();
+                    }
+
+                    // Close the modal and refresh the athlete details
+                    showAthleteDetails();  // Assuming this function will reload the athlete data
+                    window.location.href = '/cancelTRaining'; // Redirect to cancelTRaining page
+                } else {
+                    throw new Error(data.message || 'Failed to cancel training plan');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to cancel training plan. Please try again.');
+            })
+            .finally(() => {
+                closeDialog(dialog);
+            });
+        }
+
+
+
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.modal-tab');
+            const sections = document.querySelectorAll('.modal-content-section');
+
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.getAttribute('onclick').includes(tabName)) {
+                    tab.classList.add('active');
+                }
+            });
+
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === `${tabName}-section`) {
+                    section.classList.add('active');
+                }
+            });
+        }
+
+        function showAthleteDetails() {
+            closeModal()
+            const athleteData = {
+                name: "{{ athlete.name }}",
+                age: {{ athlete.age }},
+                current_weight: {{ athlete.current_weight }},
+                weight_category: "{{ athlete.weight_category }}",
+                athlete_id: "{{ athlete.athlete_id }}",
+                trainings: [
+                    {% for training in athlete.athlete_trainings %}
+                    {
+                        id: {{ training.id }},
+                        plan_name: "{{ training.training_plan.plan_name }}",
+                        start_date: "{{ training.start_date }}",
+                        end_date: {% if training.end_date %}"{{ training.end_date }}"{% else %}null{% endif %},
+                        category: "{{ training.training_plan.category }}",
+                        session_per_week: {{ training.training_plan.session_per_week }}
+                    }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                competitions: [
+                    {% for comp in athlete.athlete_competitions %}
+                    {
+                        competition_name: "{{ comp.competition.competition_name }}",
+                        date: "{{ comp.competition.date }}",
+                        location: "{{ comp.competition.location }}",
+                        weight_category: "{{ comp.competition.weight_category }}",
+                        entry_fee: {{ comp.competition.entry_fee }},
+                        registration_date: "{{ comp.registration_date }}"
+                    }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ]
+            };
+
+            const content = `
+                <div class="athlete-section">
+                    <h3>Profile Information</h3>
+                    <p><strong>Name:</strong> ${athleteData.name}</p>
+                    <p><strong>Age:</strong> ${athleteData.age}</p>
+                    <p><strong>Weight:</strong> ${athleteData.current_weight} kg</p>
+                    <p><strong>Category:</strong> ${athleteData.weight_category}</p>
+                    <p><strong>Athlete ID:</strong> ${athleteData.athlete_id}</p>
+
+                    <div class="athlete-subscriptions">
+                        <h3>Active Training Plans</h3>
+                        ${athleteData.trainings
+                            .filter(training => !training.end_date)
+                            .map(training => `
+                                <div class="subscription-card">
+                                    <h4>${training.plan_name}</h4>
+                                    <p><strong>Started:</strong> ${training.start_date}</p>
+                                    <p><strong>Category:</strong> ${training.category}</p>
+                                    <p><strong>Sessions/Week:</strong> ${training.session_per_week}</p>
+                                    <button
+                                        class="cancel-button"
+                                        onclick="cancelTraining(${training.id})">
+                                        Cancel Training Plan
+                                    </button>
+                                </div>
+                            `).join('')}
+                    </div>
+
+                    <div class="athlete-competitions">
+                        <h3>Registered Competitions</h3>
+                        ${athleteData.competitions.map(comp => `
+                            <div class="competition-card">
+                                <h4>${comp.competition_name}</h4>
+                                <p><strong>Date:</strong> ${comp.date}</p>
+                                <p><strong>Location:</strong> ${comp.location}</p>
+                                <p><strong>Category:</strong> ${comp.weight_category}</p>
+                                <p><strong>Entry Fee:</strong> ₱${comp.entry_fee}</p>
+                                <p><strong>Registered:</strong> ${comp.registration_date}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+
+            showDetails('Athlete Details', content);
+        }
+
+        function cancelTrainingHandler(trainingId) {
+            cancelTraining(trainingId);
+        }
+
+
+        function showPaymentHistory() {
+            const payments = [
+                {% for payment in athlete.athlete_payments %}
+                {
+                    payment_date: "{{ payment.payment_date }}",
+                    plan_name: "{{ payment.training_plan.plan_name }}",
+                    plan_type: "{{ payment.plan_type }}",
+                    amount: {{ payment.amount }},
+                    payment_method: "{{ payment.payment_method }}"
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            const trainings = [
+                {% for training in athlete.athlete_trainings if not training.end_date %}
+                {
+                    id: {{ training.id }},
+                    plan_name: "{{ training.training_plan.plan_name }}",
+                    start_date: "{{ training.start_date }}",
+                    category: "{{ training.training_plan.category }}",
+                    monthly_fee: {{ training.training_plan.monthly_fee }},
+                    weekly_fee: {% if training.training_plan.weekly_fee %}{{ training.training_plan.weekly_fee }}{% else %}null{% endif %},
+                    private_hourly_fee: {% if training.training_plan.private_hourly_fee %}{{ training.training_plan.private_hourly_fee }}{% else %}null{% endif %}
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            const content = `
+                <div class="modal-tabs">
+                    <button class="modal-tab active" onclick="switchTab('payments')">Payment History</button>
+                    <button class="modal-tab" onclick="switchTab('subscriptions')">Active Plans</button>
+                </div>
+                <div id="payments-section" class="modal-content-section active">
+                    <table class="payment-history">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Plan</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${payments.map(payment => `
+                                <tr>
+                                    <td>${payment.payment_date}</td>
+                                    <td>${payment.plan_name}</td>
+                                    <td>${payment.plan_type}</td>
+                                    <td>₱${payment.amount}</td>
+                                    <td>${payment.payment_method}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="subscriptions-section" class="modal-content-section">
+                    ${trainings.map(training => `
+                        <div class="subscription-card">
+                            <h3>${training.plan_name}</h3>
+                            <p><strong>Started:</strong> ${training.start_date}</p>
+                            <p><strong>Category:</strong> ${training.category}</p>
+                            <p><strong>Monthly Fee:</strong> ₱${training.monthly_fee}</p>
+                            ${training.weekly_fee ? `<p><strong>Weekly Fee:</strong> ₱${training.weekly_fee}</p>` : ''}
+                            ${training.private_hourly_fee ? `<p><strong>Private Hour:</strong> ₱${training.private_hourly_fee}</p>` : ''}
+                            <button
+                                class="cancel-button"
+                                onclick="cancelTraining(${training.id})">
+                                Cancel Training Plan
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>`;
+
+            showDetails('Payments & Plans', content);
+        }
+
+    </script>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Judo</h1>
+        <div class="menu">
+            <span class="menu-icon">☰</span>
+            <div class="dropdown">
+                <a href="#" onclick="showAthleteDetails()">Profile</a>
+                <a href="#" onclick="showPaymentHistory()">Payments</a>
+                <a href="{{ url_for('login') }}">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Athletes Section -->
+    <div class="section" id="athletes">
+        <h2>Athletes</h2>
+        <div class="scroll-container">
+            {% for athlete in athletes %}
+                <div class="card"
+                    data-name="{{ athlete.name }}"
+                    data-age="{{ athlete.age }}"
+                    data-weight="{{ athlete.current_weight }}"
+                    data-category="{{ athlete.weight_category }}">
+                    {{ athlete.name[0] }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Plans Section -->
+    <div class="section" id="plans">
+        <h2>Plans</h2>
+        <div class="scroll-container">
+            {% for plan in plans %}
+                <div class="card"
+                    data-name="{{ plan.plan_name }}"
+                    data-description="{{ plan.description }}"
+                    data-monthly-fee="{{ plan.monthly_fee }}"
+                    data-weekly-fee="{{ plan.weekly_fee }}"
+                    data-hourly-fee="{{ plan.private_hourly_fee }}"
+                    data-category="{{ plan.category }}"
+                    data-sessions="{{ plan.session_per_week }}"
+                    data-athlete-id="{{ athlete_id }}"
+                    data-plan-id="{{ plan.training_plan_id }}">
+                    {{ plan.plan_name[0] }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <div class="section" id="competitions">
+        <h2>Competitions</h2>
+        <div class="scroll-container">
+            {% for competition in competitions %}
+                <div class="card"
+                    data-name="{{ competition.competition_name }}"
+                    data-location="{{ competition.location }}"
+                    data-date="{{ competition.date }}"
+                    data-entry-fee="{{ competition.entry_fee }}"
+                    data-category="{{ competition.weight_category }}"
+                    data-register-url="{{ url_for('register_competition', athlete_id=athlete_id, competition_id=competition.competition_id) }}">
+                    {{ competition.competition_name[0] }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Keep only this modal structure at the bottom of the body -->
+    <div id="modal-overlay" class="modal-overlay" onclick="closeModal()"></div>
+    <div id="modal" class="modal">
+        <div id="modal-title" class="modal-header"></div>
+        <div id="modal-content" class="modal-content"></div>
+        <button class="modal-close" onclick="closeModal()">Close</button>
+    </div>
+</body>
+</html>

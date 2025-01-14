@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Session Type</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #2c2c2c; /* Deep Gray */
+            color: #f5f5dc; /* Cream */
+        }
+        .navbar {
+            display: flex;
+            justify-content: flex-start; /* Align "Judo" to the left */
+            align-items: center;
+            padding: 15px 30px;
+            background: #3c3c3c; /* Slightly lighter deep gray */
+            color: #ffca28; /* Mustard Yellow */
+            border-bottom: 2px solid #1e40af; /* Ultramarine */
+        }
+        .navbar h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #ffca28; /* Mustard Yellow */
+        }
+        .main-container {
+            display: flex;
+            flex-grow: 1; /* Allow the container to fill the remaining height */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+        .container {
+            width: 400px;
+            padding: 20px;
+            background: #3c3c3c; /* Slightly lighter gray */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid #5a5a5a;
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+            color: #ffca28; /* Mustard Yellow */
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: center;
+            display: block;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            background: #2c2c2c;
+            border: 1px solid #5a5a5a;
+            border-radius: 5px;
+            color: #f5f5dc;
+            font-size: 1rem;
+            text-align: center;
+        }
+        select:focus {
+            outline: none;
+            border-color: #1e40af; /* Ultramarine */
+            box-shadow: 0 0 5px rgba(30, 64, 175, 0.7);
+        }
+        .button-group {
+            margin-top: 20px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #ffca28; /* Mustard Yellow */
+            border: none;
+            border-radius: 5px;
+            color: #2c2c2c;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 10px; /* Add space between buttons */
+        }
+        button:hover {
+            background: #ffb300; /* Slightly darker mustard yellow */
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Judo</h1>
+    </div>
+    <div class="main-container">
+        <div class="container">
+            <h2>Select Session Type</h2>
+            <!-- Changed the form action to use training_plan_id instead of training_plan.training_plan_id -->
+            <form method="POST" action="{{ url_for('payment_session_type', athlete_id=athlete.athlete_id, training_plan_id=training_plan.training_plan_id) }}" id="sessionForm">
+                <div class="form-group">
+                    <label for="session_type">Choose a session type:</label>
+                    <select name="session_type" id="session_type" required>
+                        <option value="">Select a type</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="private">Private (₱{{ training_plan.private_hourly_fee }})</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn">Proceed to Payment</button>
+                    <button type="button" onclick="window.location.href='{{ url_for('dashboard') }}'">Back</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.getElementById('sessionForm').onsubmit = function(e) {
+        const sessionType = document.getElementById('session_type').value;
+        if (!sessionType) {
+            e.preventDefault();
+            alert('Please select a session type');
+            return false;
+        }
+        return true;
+    };
+    </script>
+</body>
+</html>
